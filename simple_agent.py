@@ -1,4 +1,5 @@
 from langchain_openai.chat_models import ChatOpenAI
+from langchain_ollama import ChatOllama
 from langgraph.prebuilt import create_react_agent
 from langchain_core.tools import tool
 from langchain_community.tools.searx_search.tool import SearxSearchResults
@@ -16,15 +17,14 @@ console = Console()
 
 environ["OPENAI_API_KEY"] = "dummy"
 
-llm = ChatOpenAI(
-    model="qwen2.5-instruct",
-    base_url="http://10.0.1.1:9080/v1",
-    streaming=True,
+llm = ChatOllama(
+    model="qwen2.5:14b",
+    base_url="http://localhost:11434/",
     max_tokens=4096,
     temperature=0.3,
 )
 
-searx_wrapper = SearxSearchWrapper(searx_host="http://10.0.1.1:9081")
+searx_wrapper = SearxSearchWrapper(searx_host="http://localhost:8080")
 searx_tool = SearxSearchResults(verbose=False, wrapper=searx_wrapper, num_results=6)
 
 
@@ -54,7 +54,7 @@ tools = [
 ]
 
 
-graph = create_react_agent(model=llm, tools=tools)
+graph = create_react_agent(model=llm, tools=tools, debug=True)
 
 
 def get_agent_response(user_query: str) -> str:

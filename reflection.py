@@ -1,5 +1,7 @@
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
+from langchain_ollama import ChatOllama
+from langchain_groq import ChatGroq
 from langchain_core.messages import HumanMessage, ToolMessage, SystemMessage, AIMessage
 from langchain_core.output_parsers.openai_tools import PydanticToolsParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
@@ -20,10 +22,9 @@ from simple_agent import get_agent_response
 
 environ["OPENAI_API_KEY"] = "dummy"
 
-llm = ChatOpenAI(
-    model="codestral-22b-v0.1",
-    base_url="http://10.0.1.1:9080/v1",
-    streaming=True,
+llm = ChatGroq(
+    model="llama3-groq-70b-8192-tool-use-preview",
+    # base_url="http://localhost:11434/",
     max_tokens=4096,
     temperature=0.3,
 )
@@ -206,7 +207,7 @@ def event_loop(state: list):
 # revise -> execute_tools OR end
 builder.add_conditional_edges("revise", event_loop, ["execute_tools", END])
 builder.add_edge(START, "draft")
-graph = builder.compile()
+graph = builder.compile(debug=True)
 
 user_input = input("User query: ")
 user_context = tool.invoke({"query": f"{user_input}. Note: Information should be specific to India or Axis Bank."})
@@ -228,6 +229,7 @@ events = graph.stream(
         ]
     },
     stream_mode="values",
+    debug=True
 )
 for i, step in enumerate(events):
     step["messages"][-1].pretty_print()
