@@ -6,9 +6,11 @@ from langchain_core.messages import HumanMessage, ToolMessage, SystemMessage, AI
 from langchain_core.output_parsers.openai_tools import PydanticToolsParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tools import StructuredTool
+from langchain_core.runnables.config import RunnableConfig
 from langgraph.prebuilt import ToolNode
 from langgraph.graph import END, StateGraph, START
 from langgraph.graph.message import add_messages
+from langfuse.callback import CallbackHandler
 
 from pydantic import BaseModel, Field, ValidationError
 from typing import Annotated, Type
@@ -22,13 +24,25 @@ from simple_agent import get_agent_response
 
 environ["OPENAI_API_KEY"] = "dummy"
 
-llm = ChatGroq(
-    model="llama3-groq-70b-8192-tool-use-preview",
-    # base_url="http://localhost:11434/",
+langfuse_handler = CallbackHandler()
+
+answer_llm = ChatOpenAI(
+    model="qwen2.5-instruct",
+    base_url="http://10.0.1.1:9080/v1",
+    streaming=True,
     max_tokens=4096,
     temperature=0.3,
+    callbacks=[langfuse_handler],
 )
 
+revision_llm = ChatOpenAI(
+    model="codestral-22b-v0.1",
+    base_url="http://10.0.1.1:9080/v1",
+    streaming=True,
+    max_tokens=4096,
+    temperature=0.3,
+    callbacks=[langfuse_handler]
+)
 
 class AgentSearchInput(BaseModel):
     query: str = Field(description="query to look up on web")
@@ -47,7 +61,7 @@ class AgentSearchTool(BaseTool):
         return get_agent_response(query)
 
 
-tool = AgentSearchTool()
+tool = AgentSearchTool(callbacks=[langfuse_handler])
 
 
 class Reflection(BaseModel):
@@ -116,7 +130,7 @@ Current time: {time}
 initial_answer_chain = actor_prompt_template.partial(
     first_instruction="Write an extremely detailed answer.",
     function_name=AnswerQuestion.__name__,
-) | llm.bind_tools(tools=[AnswerQuestion])
+) | answer_llm.bind_tools(tools=[AnswerQuestion])
 validator = PydanticToolsParser(tools=[AnswerQuestion])
 
 first_responder = ResponderWithRetries(
@@ -149,7 +163,7 @@ class ReviseAnswer(AnswerQuestion):
 revision_chain = actor_prompt_template.partial(
     first_instruction=revise_instructions,
     function_name=ReviseAnswer.__name__,
-) | llm.bind_tools(tools=[ReviseAnswer])
+) | revision_llm.bind_tools(tools=[ReviseAnswer])
 revision_validator = PydanticToolsParser(tools=[ReviseAnswer])
 
 revisor = ResponderWithRetries(runnable=revision_chain, validator=revision_validator)
@@ -210,28 +224,20 @@ builder.add_edge(START, "draft")
 graph = builder.compile(debug=True)
 
 user_input = input("User query: ")
-user_context = tool.invoke({"query": f"{user_input}. Note: Information should be specific to India or Axis Bank."})
+user_context = tool.invoke(
+    {"query": user_input}, RunnableConfig(callbacks=[langfuse_handler])
+)
 
 events = graph.stream(
     {
         "messages": [
-            SystemMessage(
-                content="""
-                - You are an AI content writer.
-                - Write an extremely detailed and complete answer for the user query.
-                - Make sure to include all relevant information.
-                - Note that the information should be specific to india or Axis Bank.
-                - You must use valid markdown syntax.
-                """
-            ),
-            ToolMessage(content=user_context, tool_call_id=str(uuid4())),
+            HumanMessage(content=f"Here is some context:\n{user_context}"),
             HumanMessage(content=user_input),
         ]
     },
+    config=RunnableConfig(callbacks=[langfuse_handler]),
     stream_mode="values",
     debug=True
 )
 for i, step in enumerate(events):
     step["messages"][-1].pretty_print()
-
-print("=" * 100)
