@@ -1,0 +1,12 @@
+{
+    "name": "intellect-mesh",
+    "image": "docker.io/library/python",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.black-formatter"
+            ]
+        }
+    }
+}

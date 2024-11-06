@@ -1,0 +1,10 @@
+langchain
+langchain-openai
+langchain-community
+rich
+youtube-search
+wikipedia
+langgraph
+langchain-experimental
+playwright
+langchain-ollama
