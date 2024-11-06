@@ -1,6 +1,6 @@
 from langchain_core.tools import BaseTool
 from langchain_openai import ChatOpenAI
-from langchain_core.messages import HumanMessage, ToolMessage, SystemMessage
+from langchain_core.messages import HumanMessage, ToolMessage, SystemMessage, AIMessage
 from langchain_core.output_parsers.openai_tools import PydanticToolsParser
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_core.tools import StructuredTool
@@ -209,7 +209,7 @@ builder.add_edge(START, "draft")
 graph = builder.compile()
 
 user_input = input("User query: ")
-user_context = tool.invoke({"query": user_input})
+user_context = tool.invoke({"query": f"{user_input}. Note: Information should be specific to India or Axis Bank."})
 
 events = graph.stream(
     {
@@ -230,5 +230,6 @@ events = graph.stream(
     stream_mode="values",
 )
 for i, step in enumerate(events):
-    print(f"Step {i}")
     step["messages"][-1].pretty_print()
+
+print("=" * 100)

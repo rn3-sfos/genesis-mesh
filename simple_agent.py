@@ -50,10 +50,7 @@ def scrape_webpage(url: str) -> str:
 
 tools = [
     searx_tool,
-    scrape_webpage,
-    # WikipediaQueryRun(
-    #     api_wrapper=WikipediaAPIWrapper()
-    # )
+    scrape_webpage
 ]
 
 
@@ -64,13 +61,6 @@ def get_agent_response(user_query: str) -> str:
     response = graph.invoke(
         input={
             "messages": [
-                SystemMessage(
-                    content="""
-                        - Note that the information should be specific to india or Axis Bank.
-                        - Extensively research and create an extremely detailed blog post for user query. Add a 'References' section to the bottom of your answer in form of:
-                            - [1] https://example.com
-                            - [2] https://example.com"""
-                ),
                 HumanMessage(content=user_query),
             ]
         }
