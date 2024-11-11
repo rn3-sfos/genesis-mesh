@@ -2,3 +2,4 @@
 .venv/
 *.png
 vision.py
+.env

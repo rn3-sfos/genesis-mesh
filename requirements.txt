@@ -1,6 +1,7 @@
 langchain
 langchain-openai
 langchain-community
+langchain-groq
 rich
 youtube-search
 wikipedia
@@ -9,3 +10,6 @@ langchain-experimental
 playwright
 langchain-ollama
 langfuse
+python-dotenv
+playwright
+markdownify
