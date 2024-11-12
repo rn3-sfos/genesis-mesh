@@ -13,3 +13,4 @@ langfuse
 python-dotenv
 playwright
 markdownify
+unstructured[all-docs] # Depends on poppler, libmagic, libreoffice, pandoc, tesseract, cmake, protobuf-compiler (build from source)
