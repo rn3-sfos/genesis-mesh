@@ -14,7 +14,7 @@ urls_to_scrape = [
     # "https://www.axisbank.com/download-forms/accounts",
     # "https://weather.com/en-IN/weather/hourbyhour/l/1c687804fd0b8b846d064a66060d69ad2458db1680904b0e45b7a072bae32513",
     # "https://www.axisbank.com/docs/default-source/default-document-library/sb-trust-account-mid-ver-xxi.pdf",
-    "https://videos.pexels.com/video-files/3209663/3209663-uhd_3840_2160_25fps.mp4"
+    "https://www.tataaig.com/s3/Medicare_Plus_bc171907df.pdf"
 ]
 
 

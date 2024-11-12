@@ -6,7 +6,9 @@ from unstructured.documents.elements import Element
 from langchain.schema import Document
 from langchain_community.document_transformers import MarkdownifyTransformer
 from concurrent.futures import ThreadPoolExecutor
-import logging
+import logging, os
+
+os.environ["OCR_AGENT"] = "unstructured.partition.utils.ocr_models.paddle_ocr.OCRAgentPaddle"
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +26,8 @@ class UnstructuredParser:
 
     def __document_to_md(self, document_content: str) -> str:
         """Convert document to markdown with caching for repeated content."""
+        logger.warning("Converting document to Markdown")
+        logger.warning("Extracting md...")
         document = Document(page_content=document_content)
         md_contents = self.md_transformer.transform_documents([document])
         return "\n".join(
@@ -34,6 +38,7 @@ class UnstructuredParser:
 
     def __process_element(self, element: Element) -> str:
         """Process individual elements with error handling."""
+        logger.warning("Extracting html...")
         try:
             if element.metadata.text_as_html:
                 return element.metadata.text_as_html
@@ -44,6 +49,7 @@ class UnstructuredParser:
 
     def __parse_elements(self, elements: List[Element]) -> Document:
         """Parse elements using parallel processing for large documents."""
+        logger.warning("Processing elements...")
         with ThreadPoolExecutor(max_workers=self.max_workers) as executor:
             content = list(executor.map(self.__process_element, elements))
         return Document(page_content="\n".join(filter(None, content)))
@@ -59,6 +65,7 @@ class UnstructuredParser:
         Returns:
             Markdown formatted string
         """
+        logger.warning(f"Processing {file_path}")
         try:
             file_path = Path(file_path).resolve()
             if not file_path.exists():
@@ -67,8 +74,7 @@ class UnstructuredParser:
             elements = partition(
                 filename=str(file_path),
                 strategy="hi_res",
-                skip_infer_table_types=[],
-                pdf_infer_table_structure=True,
+                skip_infer_table_types=[]
             )
 
             if chunk_size and len(elements) > chunk_size:

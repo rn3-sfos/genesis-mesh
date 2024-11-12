@@ -1,6 +1,6 @@
 {
     "name": "intellect-mesh",
-    "image": "docker.io/library/python",
+    "image": "docker.io/library/python:3.12-bookworm",
     "customizations": {
         "vscode": {
             "extensions": [

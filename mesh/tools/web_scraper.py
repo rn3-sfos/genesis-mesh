@@ -103,20 +103,23 @@ class WebScraper(BaseTool):
                     "domcontentloaded",
                     lambda page: self.__handle_page_load(page, url, content),
                 )
-                page.on(
-                    "download",
-                    lambda download: self.__handle_download(download, url, content),
-                )
+                # page.on(
+                #     "download",
+                #     lambda download: self.__handle_download(download, url, content),
+                # )
+                async with page.expect_download() as download_info:
+                    download = await download_info.value
+                    await self.__handle_download(download, url, content)
 
                 try:
                     await page.goto(url)
                 except Exception as e:
                     pass
 
-                await page.close()
-
             except Exception as e:
                 logger.error(msg="Failed to get page content", exc_info=True)
+            finally:
+                await page.close()
         logger.warning(f"Done {url}")
 
     def _run(self, urls: List[str]) -> str:
