@@ -11,16 +11,17 @@ scraper = WebScraper()
 
 # Run the scraper with your URLs
 urls_to_scrape = [
-    # "https://www.axisbank.com/download-forms/accounts",
+    "https://www.axisbank.com/download-forms/accounts",
     # "https://weather.com/en-IN/weather/hourbyhour/l/1c687804fd0b8b846d064a66060d69ad2458db1680904b0e45b7a072bae32513",
-    # "https://www.axisbank.com/docs/default-source/default-document-library/sb-trust-account-mid-ver-xxi.pdf",
-    "https://www.tataaig.com/s3/Medicare_Plus_bc171907df.pdf"
+    "https://www.axisbank.com/docs/default-source/default-document-library/sb-trust-account-mid-ver-xxi.pdf",
+    "https://www.tataaig.com/s3/Medicare_Plus_bc171907df.pdf",
+    # "https://podcasts.ceu.edu/sites/podcasts.ceu.edu/files/sample.doc",
 ]
 
 
 # Execute the scraper
 def main():
-    results = asyncio.run(scraper._arun(urls_to_scrape))
+    results = asyncio.run(scraper.ainvoke(input={"urls": urls_to_scrape}))  # type: ignore
     file_name = f"{str(uuid4())[:4]}.md"
     logger.warning(f"Writing {file_name}")
     with open(os.path.join(gettempdir(), file_name), "w") as f:
