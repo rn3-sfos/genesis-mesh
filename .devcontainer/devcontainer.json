@@ -15,17 +15,7 @@
         "--userns=keep-id"
     ],
     "containerEnv": {
-        "HOME": "/home/ubuntu",
-        "WAYLAND_DISPLAY": "/run/user/1000/wayland-0",
-        "XDG_RUNTIME_DIR": "/run/user/1000",
-        "MOZ_ENABLE_WAYLAND": "1"
+        "HOME": "/home/ubuntu"
     },
-    "mounts": [
-        {
-            "source": "/run/user/1000/wayland-0",
-            "target": "/run/user/1000/wayland-0",
-            "type": "bind"
-        }
-    ],
     "remoteUser": "ubuntu"
 }
