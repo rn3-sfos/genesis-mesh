@@ -3,6 +3,7 @@ from uuid import uuid4
 from logging import Logger
 from tempfile import gettempdir
 import asyncio, os
+from json import dumps
 
 logger = Logger(__file__)
 
@@ -22,10 +23,10 @@ urls_to_scrape = [
 # Execute the scraper
 def main():
     results = asyncio.run(scraper.ainvoke(input={"urls": urls_to_scrape}))  # type: ignore
-    file_name = f"{str(uuid4())[:4]}.md"
+    file_name = f"{str(uuid4())[:4]}.json"
     logger.warning(f"Writing {file_name}")
     with open(os.path.join(gettempdir(), file_name), "w") as f:
-        f.write(results)
+        f.write(dumps(results))
     print("done")
 
 
