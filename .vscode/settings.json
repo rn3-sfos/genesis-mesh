@@ -1,0 +1,11 @@
+{
+    "files.autoSave": "onFocusChange",
+    "editor.formatOnSave": true,
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.fixAll": [
+        "source.unusedImports"
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "charliermarsh.ruff"
+    }
+}

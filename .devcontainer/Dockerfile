@@ -1,5 +1,11 @@
-FROM docker.io/ubuntu:latest
+FROM docker.io/ubuntu:rolling
 USER root
-RUN echo "ubuntu:password" | chpasswd
-RUN apt update && apt dist-upgrade -y
-RUN apt install -y python3.12-full python3.12-venv git sudo libreoffice libmagic-dev poppler-utils
+
+# Use your own password
+RUN echo "ubuntu:password" | chpasswd && \
+    apt update && apt dist-upgrade -y && \
+    apt install -y python3.12-full python3.12-venv pipx git sudo
+
+USER ubuntu
+RUN pipx ensurepath && \
+    pipx install hatch

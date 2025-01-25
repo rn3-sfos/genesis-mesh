@@ -7,15 +7,22 @@
         "vscode": {
             "extensions": [
                 "ms-python.python",
-                "ms-python.black-formatter"
+                "charliermarsh.ruff",
+                "ms-python.mypy-type-checker",
+                "redhat.vscode-yaml",
+                "eamodio.gitlens",
+                "MS-vsliveshare.vsliveshare",
+                "ms-python.isort"
             ]
         }
     },
     "runArgs": [
         "--userns=keep-id"
     ],
+    "postStartCommand": "PATH=/home/ubuntu/.local/bin hatch env create && PATH=/home/ubuntu/.local/bin hatch fmt --check --sync",
     "containerEnv": {
         "HOME": "/home/ubuntu"
     },
-    "remoteUser": "ubuntu"
+    "remoteUser": "ubuntu",
+    "appPort": 10080
 }
