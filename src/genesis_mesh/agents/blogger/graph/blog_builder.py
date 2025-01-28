@@ -38,18 +38,14 @@ class BloggerGraphBuilder:
             max_completion_tokens=self.blogger_config.planner_llm_max_tokens,
         )
         self.util_functions = UtilityFunctions(http_client=http_client)
-        self.section_writer_graph_builder = SectionWriterGraphBuilder(
-            http_client=http_client
-        )
+        self.section_writer_graph_builder = SectionWriterGraphBuilder(http_client=http_client)
 
     async def generate_blog_plan(self, state: BlogState):
         # Inputs
         topic = state["topic"]
 
         # Generate search query
-        structured_llm = self.planner_llm.with_structured_output(
-            Queries, method="function_calling", strict=True
-        )
+        structured_llm = self.planner_llm.with_structured_output(Queries, method="function_calling", strict=True)
 
         # Format system instructions
         system_instructions_query = blog_planner_query_writer_instructions.format(
@@ -84,9 +80,7 @@ class BloggerGraphBuilder:
         )
 
         # Generate sections
-        structured_llm = self.planner_llm.with_structured_output(
-            Sections, method="function_calling", strict=True
-        )
+        structured_llm = self.planner_llm.with_structured_output(Sections, method="function_calling", strict=True)
         blog_sections = structured_llm.invoke(
             [
                 SystemMessage(content=system_instructions_sections),
@@ -101,12 +95,7 @@ class BloggerGraphBuilder:
     def initiate_section_writing(self, state: BlogState):
         """This is the "map" step when we kick off web research for some sections of the blog"""
 
-        # Kick off section writing in parallel via Send() API for any sections that require research
-        return [
-            Send("build_section_with_web_research", {"section": s})
-            for s in state["sections"]
-            if s.research
-        ]
+        return [Send("build_section_with_web_research", {"section": s}) for s in state["sections"] if s.research]
 
     async def write_final_sections(self, state: SectionState):
         """Write final sections of the blog, which do not require web search and use the completed sections as context"""
@@ -126,9 +115,7 @@ class BloggerGraphBuilder:
         section_content = await self.planner_llm.ainvoke(
             [
                 SystemMessage(content=system_instructions),
-                HumanMessage(
-                    content="Generate a blog section based on the provided sources."
-                ),
+                HumanMessage(content="Generate a blog section based on the provided sources."),
             ]
         )
 
@@ -145,9 +132,7 @@ class BloggerGraphBuilder:
         completed_sections = state["completed_sections"]
 
         # Format completed section to str to use as context for final sections
-        completed_blog_sections = self.util_functions.format_sections(
-            completed_sections
-        )
+        completed_blog_sections = self.util_functions.format_sections(completed_sections)
 
         return {"blog_sections_from_research": completed_blog_sections}
 
@@ -187,9 +172,7 @@ class BloggerGraphBuilder:
         # Add nodes and edges
         builder = StateGraph(BlogState, input=BlogStateInput, output=BlogStateOutput)
         builder.add_node("generate_blog_plan", self.generate_blog_plan)
-        builder.add_node(
-            "build_section_with_web_research", self.section_writer_graph_builder.build()
-        )
+        builder.add_node("build_section_with_web_research", self.section_writer_graph_builder.build())
         builder.add_node("gather_completed_sections", self.gather_completed_sections)
         builder.add_node("write_final_sections", self.write_final_sections)
         builder.add_node("compile_final_blog", self.compile_final_blog)

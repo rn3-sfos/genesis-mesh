@@ -92,6 +92,7 @@ section_writer_instructions = cleandoc(
     - Write in simple, clear language
     - Start with your most important insight in **bold**
     - Use short paragraphs (2-3 sentences max)
+    - Use first person pronouns
 
     3. Structure:
     - Use ## for section title (Markdown format)
@@ -138,7 +139,7 @@ final_section_writer_instructions = cleandoc(
     For Introduction:
     - Use # for blog title (Markdown format)
     - 50-100 word limit
-    - Write in simple and clear language
+    - Write in simple and clear language using 1st person pronouns
     - Focus on the core motivation for the blog in 1-2 paragraphs
     - Use a clear narrative arc to introduce the blog
     - Include NO structural elements (no lists or tables)
@@ -165,8 +166,10 @@ final_section_writer_instructions = cleandoc(
     - Use concrete details over general statements
     - Make every word count
     - Focus on your single most important point
+    - Use first person pronouns
 
     4. Quality Checks:
+    - DO NOT repeat same idea, thought or information.
     - For introduction: 50-100 word limit, # for blog title, no structural elements, no sources section
     - For conclusion: 100-150 word limit, ## for section title, only ONE structural element at most, no sources section
     - Markdown format

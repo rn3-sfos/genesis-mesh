@@ -11,9 +11,7 @@ class Section(BaseModel):
     description: str = Field(
         description="Brief overview of the main topics and concepts to be covered in this section.",
     )
-    research: bool = Field(
-        description="Whether to perform web research for this section of the blog."
-    )
+    research: bool = Field(description="Whether to perform web research for this section of the blog.")
     content: str = Field(description="The content of the section.")
 
 

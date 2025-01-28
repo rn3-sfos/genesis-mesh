@@ -10,7 +10,5 @@ class Blogger:
         self.graph = graph_builder.build()
 
     async def invoke_agent(self, topic: str):
-        async for update in self.graph.astream(
-            input={"topic": topic}, stream_mode="updates"
-        ):
+        async for update in self.graph.astream(input={"topic": topic}, stream_mode="updates"):
             yield convert_to_json(update)

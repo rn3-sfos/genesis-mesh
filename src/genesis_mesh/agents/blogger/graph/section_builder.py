@@ -50,9 +50,7 @@ class SectionWriterGraphBuilder:
         section = state["section"]
 
         # Generate queries
-        structured_llm = self.executor_llm.with_structured_output(
-            Queries, method="function_calling", strict=True
-        )
+        structured_llm = self.executor_llm.with_structured_output(Queries, method="function_calling", strict=True)
 
         # Format system instructions
         system_instructions = query_writer_instructions.format(
@@ -104,9 +102,7 @@ class SectionWriterGraphBuilder:
         section_content = await self.planner_llm.ainvoke(
             [
                 SystemMessage(content=system_instructions),
-                HumanMessage(
-                    content="Generate a blog section based on the provided sources."
-                ),
+                HumanMessage(content="Generate a blog section based on the provided sources."),
             ]
         )
 

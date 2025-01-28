@@ -72,17 +72,8 @@ class UtilityFunctions:
 
         async def enrich_results_with_web_content() -> list[dict[str, str]]:
             urls = [result["url"] for result in search_results]
-            web_crawler_results: list[dict[str, str]] = await self.crawler_tool.ainvoke(
-                input={"urls": urls}
-            )
-            return [
-                {**d1, **d2}
-                for d1 in search_results
-                for d2 in web_crawler_results
-                if d1["url"] == d2["url"]
-            ]
+            web_crawler_results: list[dict[str, str]] = await self.crawler_tool.ainvoke(input={"urls": urls})
+            return [{**d1, **d2} for d1 in search_results for d2 in web_crawler_results if d1["url"] == d2["url"]]
 
-        await gather(
-            *[get_search_results(query.search_query) for query in search_queries]
-        )
+        await gather(*[get_search_results(query.search_query) for query in search_queries])
         return await enrich_results_with_web_content()
